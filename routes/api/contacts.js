@@ -1,19 +1,19 @@
 const express = require("express");
-const Joi = require("joi");
-
+const { Contact } = require("../api/schems"); // add Schema
 const {
-  listContacts,
-  getContactById,
-  addContact,
-  removeContact,
+  updateStatusContact,
+  saveContact,
   updateContact,
-} = require("../../models/contactsFuncs");
+  checkFields,
+  validateContact,
+} = require("../../models/contactsFunctions");
 
 const router = express.Router();
 
-router.get("/", async (req, res, next) => {
+// Get all contacts
+router.get("/", async (req, res) => {
   try {
-    const contacts = await listContacts(); // get contacts list
+    const contacts = await Contact.find({}); // read db.contacts
     res.status(200).json(contacts); // return contacts list
   } catch (error) {
     console.error(error);
@@ -21,10 +21,11 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.get("/:contactId", async (req, res, next) => {
+// Get contact by ID
+router.get("/:contactId", async (req, res) => {
   try {
     const { contactId } = req.params;
-    const contact = await getContactById(contactId);
+    const contact = await Contact.findById(contactId); // find contact by id
     if (contact) {
       res.status(200).json(contact); // return contact by id
     } else {
@@ -32,62 +33,77 @@ router.get("/:contactId", async (req, res, next) => {
     }
   } catch (error) {
     console.error(error);
-    res.status(500).send("Server error");
+    res.status(500).send("Server error while Get ID");
   }
 });
 
-// create schema for validation
-const contactSchema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().email().required(),
-  phone: Joi.string().required(),
-});
-
-router.post("/", async (req, res, next) => {
+// Update status contact
+router.post("/", validateContact, async (req, res) => {
   try {
-    const { error } = contactSchema.validate(req.body); // validate request body
-    if (error) {
-      return res.status(400).json({ message: error.details[0].message }); // return 400 error if validation failed
-    }
-    const contact = { ...req.body };
-    await addContact(contact); // save contact to file
-    res.status(201).json(contact); // return saved contact with id
+    saveContact(res, Contact, req.body);
+
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");
   }
 });
 
-router.delete("/:contactId", async (req, res, next) => {
+//  Delete contact
+router.delete("/:contactId", async (req, res) => {
   try {
     const { contactId } = req.params;
-    await removeContact(contactId); // delete contact from file
-    res.status(200)
-      .json({ message: "Contact deleted" }); // return success message
+    await Contact.findByIdAndDelete(contactId);  // delete contact from db
+   
+    res.status(200).json({ message: "Contact deleted" }); 
   } catch (error) {
-    res.status(404)
-      .json({ message: "Contact for delete is not found" });
+    res.status(404).json({ message: "Contact for delete is not found" });
   }
 });
 
-router.put("/:contactId", async (req, res, next) => {
+// Update contact
+router.put("/:contactId", async (req, res) => {
   try {
-    const { contactId } = req.params;
+   await checkFields(req, res);
 
-    const { error, value } = contactSchema.validate(req.body);
-    if (error) {
-      return res.status(400)
-        .json({ message: error.details[0].message });
-    }
-
-    const updatedContact = await updateContact(contactId, value);
-    res.status(200).json(updatedContact);
+   await updateContact(req, res, Contact);
+    
   } catch (error) {
     if (error.message === "Contact not found") {
-      return res.status(404)
+      return res
+        .status(404)
         .json({ message: "Contact for update is not found" });
     }
     res.status(500).json({ message: error.message });
+  }
+});
+
+
+// Update contact favourite status
+router.patch("/:contactId/favorite", async (req, res) => {
+  try {
+    const { contactId } = req.params;
+    const { favorite } = req.body;
+
+    // Check if favorite field exists
+    if (!req.body || typeof favorite !== "boolean") {
+      return res.status(400).json({ message: "missing field favorite" });
+    }
+
+    // Check if contact exists
+    const contact = await Contact.findById(contactId);
+    if (!contact) {
+      return res.status(404).json({ message: "Contact not found" });
+    }
+
+    // Update the favorite status of the contact
+    updateStatusContact(contact);
+
+    return res
+      .status(200)
+      .json({ message: "Favorite status updated successfully" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
 
