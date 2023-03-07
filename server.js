@@ -1,8 +1,25 @@
-const app = require('./app')
+const app = require("./app");
+const mongoose = require("mongoose");
+const { PORT, MONGODB_URI, DATABASE } = require("dotenv").config().parsed;
 
-app.listen(3000, (err) => {
-  if (err) {
-    console.log('Error at server launch: ', err);
+async function start() {
+  try {
+    await mongoose.connect(MONGODB_URI).then(() => {
+      console.log(
+        "Database " + DATABASE + " in MongoDB connected successfully"
+      );
+    });
+
+    app.listen(PORT, () => {
+      console.log(
+        "Local server running successfully. Use our API: http://localhost: on port: ",
+        PORT
+      );
+    });
+  } catch (err) {
+    console.log("Error starting server: ", err);
+    process.exit(1);
   }
-  console.log("Server running successfull. Use our API on port: 3000")
-})
+}
+
+start();
