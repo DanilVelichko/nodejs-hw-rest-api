@@ -1,7 +1,7 @@
-const mongoose = require("mongoose"); // add mongoose
-const { Schema } = mongoose; // add Schema
+const mongoose = require("mongoose"); 
 
-// Модель контакту
+const { Schema } = mongoose; 
+
 const contactSchema = new Schema({
   name: {
     type: String,
