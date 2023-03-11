@@ -18,4 +18,4 @@ const handleSchemaErrors = (err, data, next) => {
   next(err);
 };
 
-module.exports = handleErrors;
+module.exports = handleSchemaErrors;

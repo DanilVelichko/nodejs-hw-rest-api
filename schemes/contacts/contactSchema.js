@@ -3,6 +3,11 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose; 
 
 const contactSchema = new Schema({
+  owner: {
+    type: Schema.Types.ObjectId,
+    ref: "user",
+
+  },
   name: {
     type: String,
     required: [true, "Set name for contact"],
@@ -17,7 +22,7 @@ const contactSchema = new Schema({
     type: Boolean,
     default: false,
   },
-}, { versionKey: false, timestamps: true });
+},  { versionKey: false, timestamps: true });
 
 const Contact = mongoose.model("contacts", contactSchema);
 
