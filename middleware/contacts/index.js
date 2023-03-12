@@ -1,5 +1,5 @@
 const getAllContacts = require("./getAll.js");
-const validateContact = require("./validation.js");
+const validateContact = require("./validateContact.js");
 const saveAllContact = require("./saveContact.js");
 const getALLbyId = require("./getById.js");
 const updateFavoriteStatus = require("./updateFavoriteStatus.js");

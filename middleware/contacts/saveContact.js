@@ -1,7 +1,9 @@
-const { Contact } = require("../../schemes/contacts/contact");
+const { Contact } = require("../../schemes/contacts/contactSchema");
 
-const saveContact = async (res, Contact, body) => {
-  const contact = new Contact(body);
+const saveContact = async (req, res, Contact, body) => {
+  const { _id } = req.user;
+
+  const contact = new Contact({...req.body, owner: _id});
 
   await contact.save();
   res.status(201).json(contact);
@@ -9,7 +11,7 @@ const saveContact = async (res, Contact, body) => {
 
 const saveAllContact = async (req, res) => {
   try {
-    saveContact(res, Contact, req.body);
+    saveContact(req, res, Contact);
 
   } catch (error) {
     console.error(error);

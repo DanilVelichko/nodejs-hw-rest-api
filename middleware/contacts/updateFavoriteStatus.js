@@ -1,4 +1,4 @@
-const { Contact } = require("../../schemes/contacts/contact");
+const { Contact } = require("../../schemes/contacts/contactSchema");
 
 const updateFavoriteStatus = async (req, res) => {
   try {
