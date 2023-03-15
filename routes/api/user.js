@@ -8,6 +8,12 @@ router.post("/register", usr.validateUser, usr.registerUser);
 router.get("/login", usr.validateUser, usr.loginUser);
 router.get("/current", helpers.authenticateToken, usr.getCurrentUser);
 router.post("/logout", helpers.authenticateToken, usr.logout);
-router.patch("/", helpers.authenticateToken, usr.updateUser)
+router.patch("/", helpers.authenticateToken, usr.updateUser);
+router.patch(
+  "/avatars",
+  helpers.authenticateToken,
+  usr.upload.single("avatar"),
+  usr.updateAvatar
+);
 
 module.exports = router;
