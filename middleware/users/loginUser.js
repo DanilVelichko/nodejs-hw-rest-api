@@ -5,15 +5,17 @@ const { Unauthorized } = require("http-errors");
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-console.log(email, password)
+
     const user = await User.findOne({ email });
-    console.log(user)
-    if (!user || !user.comparePassword(password)) {
-      throw new Unauthorized(`Email ${email} or password ${password} is wrong`);
+
+    if (!user || !user.verify || !user.comparePassword(password)) {
+      throw new Unauthorized(
+        `Email ${email} or password ${password} is wrong. Or check your email verification.`
+      );
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn:  process.env.TOKEN_LIFETIME,
+      expiresIn: process.env.TOKEN_LIFETIME,
     });
 
     res.json({
