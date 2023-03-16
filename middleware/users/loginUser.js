@@ -5,8 +5,9 @@ const { Unauthorized } = require("http-errors");
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-
+console.log(email, password)
     const user = await User.findOne({ email });
+    console.log(user)
     if (!user || !user.comparePassword(password)) {
       throw new Unauthorized(`Email ${email} or password ${password} is wrong`);
     }

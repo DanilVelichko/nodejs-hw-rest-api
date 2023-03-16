@@ -1,6 +1,7 @@
 const { User } = require("../../schemes/users/userSchema");
 const { Conflict, InternalServerError } = require("http-errors");
 const bcrypt = require("bcrypt");
+const gravatar = require('gravatar');
 
 const registerUser = async (req, res) => {
   try {
@@ -25,10 +26,12 @@ const checkExistingEmail = async (res, email, User) => {
 const saltAndSavePassword = async (res, email, password, User) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
+  const avatarURL = gravatar.url(email, { s: '200', r: 'pg', d: 'mm' });
   const user = new User({
     email: email,
     password: hashedPassword,
     subscription: "starter",
+    avatarURL: avatarURL,
   });
   await user.save();
 
