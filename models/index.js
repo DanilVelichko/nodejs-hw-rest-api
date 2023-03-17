@@ -1,5 +1,5 @@
-const emailVerify = require('./email/emailsTypes.js');
+const emailVerify = require("./email/emailsTypes.js");
 
 module.exports = {
-    emailVerify,
-}
+  emailVerify,
+};

@@ -6,7 +6,7 @@ const getCurrentUser = async (req, res) => {
     if (!email) {
       return res.status(401).json({ message: "Not authorized" });
     }
-   
+
     return res.status(200).json({ email, subscription });
   } catch (err) {
     console.error(err);
