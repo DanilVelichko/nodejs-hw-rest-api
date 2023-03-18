@@ -8,7 +8,7 @@ const logout = async (req, res) => {
 
     // If user not found, return 401 Unauthorized error
     if (!user) {
-       throw new Unauthorized('Not authorized');
+      throw new Unauthorized("Not authorized");
     }
 
     // Delete the user token
@@ -19,8 +19,8 @@ const logout = async (req, res) => {
     return res.status(204).send();
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
 module.exports = logout;
